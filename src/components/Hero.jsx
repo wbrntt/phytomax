@@ -56,9 +56,7 @@ export default function Hero() {
   // Parallax scroll effect
   const { scrollY } = useScroll()
   const y1 = useTransform(scrollY, [0, 500], [0, 150])
-  const y2 = useTransform(scrollY, [0, 500], [0, -100])
   const opacity = useTransform(scrollY, [0, 300], [1, 0.3])
-  const scale = useTransform(scrollY, [0, 300], [1, 0.95])
   
   // Smooth spring for mouse movement
   const springConfig = { stiffness: 100, damping: 30 }
@@ -97,7 +95,7 @@ export default function Hero() {
     <motion.section 
       ref={containerRef}
       className="relative min-h-screen bg-black overflow-hidden flex items-center"
-      style={{ opacity, scale }}
+      style={{ opacity }}
     >
       {/* Parallax Background */}
       <motion.div 
@@ -136,9 +134,8 @@ export default function Hero() {
           {/* 3D Product with Real-time Reflections */}
           <motion.div
             className="w-full md:w-1/2 flex justify-center"
-            style={{ y: y2 }}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 1, ease: "easeOut" }}
           >
             <HeroProduct3D mousePosition={mousePosition} />

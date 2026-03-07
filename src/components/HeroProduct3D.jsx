@@ -320,7 +320,7 @@ export default function HeroProduct3D({ mousePosition = { x: 0, y: 0 } }) {
   )
 }
 
-// Mobile fallback - clean display with subtle reflection
+// Mobile fallback - clean display with interactive reflections
 function MobileProductFallback({ mousePosition }) {
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -333,16 +333,42 @@ function MobileProductFallback({ mousePosition }) {
     transition: 'transform 0.2s ease-out',
   }), [mousePosition])
 
-  // Subtle highlight that moves with rotation
-  const highlightStyle = useMemo(() => ({
-    background: `
-      radial-gradient(
-        ellipse at ${50 + mousePosition.x * 30}% ${35 + mousePosition.y * 20}%,
-        rgba(255,255,255,0.25) 0%,
-        transparent 50%
-      )
-    `,
-  }), [mousePosition])
+  // Multiple highlights that move with mouse to simulate foil reflections
+  const reflectionStyle = useMemo(() => {
+    const mx = mousePosition.x
+    const my = mousePosition.y
+    return {
+      background: `
+        radial-gradient(
+          ellipse 40% 30% at ${50 + mx * 40}% ${30 + my * 25}%,
+          rgba(255,255,255,0.35) 0%,
+          transparent 70%
+        ),
+        radial-gradient(
+          ellipse 25% 20% at ${35 + mx * 30}% ${55 + my * 20}%,
+          rgba(255,255,255,0.2) 0%,
+          transparent 60%
+        ),
+        radial-gradient(
+          ellipse 30% 25% at ${65 - mx * 25}% ${45 - my * 15}%,
+          rgba(212,165,116,0.25) 0%,
+          transparent 65%
+        ),
+        linear-gradient(
+          ${135 + mx * 20}deg,
+          transparent 30%,
+          rgba(255,255,255,0.08) 45%,
+          transparent 55%
+        ),
+        linear-gradient(
+          ${45 - mx * 15}deg,
+          transparent 40%,
+          rgba(212,165,116,0.1) 50%,
+          transparent 60%
+        )
+      `,
+    }
+  }, [mousePosition])
 
   return (
     <div
@@ -374,10 +400,10 @@ function MobileProductFallback({ mousePosition }) {
             }}
           />
 
-          {/* Subtle moving highlight */}
+          {/* Multi-layer moving reflections */}
           <div
-            className="absolute inset-0 pointer-events-none transition-all duration-200"
-            style={highlightStyle}
+            className="absolute inset-0 pointer-events-none transition-all duration-150"
+            style={reflectionStyle}
           />
         </div>
       </div>

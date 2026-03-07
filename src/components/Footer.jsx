@@ -1,5 +1,6 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -116,10 +117,10 @@ export default function Footer() {
           >
             <h3 className="font-heading font-bold text-lg mb-6 text-white">Quick Links</h3>
             <div className="space-y-3">
-              {['Benefits', 'Ingredients', 'Contact', 'Privacy Policy'].map((link, index) => (
+              {['Benefits', 'Ingredients', 'Contact'].map((link, index) => (
                 <motion.a
                   key={link}
-                  href={`#${link.toLowerCase().replace(' ', '-')}`}
+                  href={`#${link.toLowerCase()}`}
                   className="block text-gray-400 hover:text-gold transition-colors text-sm"
                   whileHover={{ x: 5 }}
                   initial={{ opacity: 0, x: -10 }}
@@ -129,6 +130,16 @@ export default function Footer() {
                   {link}
                 </motion.a>
               ))}
+              <motion.div
+                whileHover={{ x: 5 }}
+                initial={{ opacity: 0, x: -10 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.4, delay: 0.45 }}
+              >
+                <Link to="/privacy" className="block text-gray-400 hover:text-gold transition-colors text-sm">
+                  Privacy Policy
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
           
@@ -174,21 +185,17 @@ export default function Footer() {
               <span className="text-gold">Phytomax Mauritius</span>. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-gray-500 text-sm">
-              <motion.a 
-                href="#" 
-                className="hover:text-gold transition-colors"
-                whileHover={{ y: -2 }}
-              >
-                Terms of Service
-              </motion.a>
+              <motion.div whileHover={{ y: -2 }}>
+                <Link to="/terms" className="hover:text-gold transition-colors">
+                  Terms of Service
+                </Link>
+              </motion.div>
               <span className="text-gray-700">|</span>
-              <motion.a 
-                href="#" 
-                className="hover:text-gold transition-colors"
-                whileHover={{ y: -2 }}
-              >
-                Privacy Policy
-              </motion.a>
+              <motion.div whileHover={{ y: -2 }}>
+                <Link to="/privacy" className="hover:text-gold transition-colors">
+                  Privacy Policy
+                </Link>
+              </motion.div>
             </div>
           </div>
         </motion.div>

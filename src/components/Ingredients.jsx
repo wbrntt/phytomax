@@ -49,9 +49,9 @@ Our 150mg extract is standardized for fatty acids and sterols, the key active co
     image: palmsImg,
   },
   {
-    name: "Horny Goat Weed",
+    name: "Epimedium",
     dosage: "100mg",
-    description: "Horny Goat Weed enhances blood circulation, supports healthy libido, and improves overall stamina and energy.",
+    description: "Epimedium enhances blood circulation, supports healthy libido, and improves overall stamina and energy.",
     fullDescription: `Horny Goat Weed (Epimedium) has been a cornerstone of traditional Chinese medicine for over 2,000 years, earning its unique name from observations of increased vitality in goats that consumed the plant.
 
 **Key Benefits:**
@@ -190,46 +190,64 @@ function IngredientModal({ ingredient, isOpen, onClose }) {
                   transition={{ delay: 0.3 }}
                 >
                   {ingredient.fullDescription.split('\n\n').map((paragraph, idx) => {
-                    if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-                      // Section header
+                    // Check if paragraph starts with a header like **Key Benefits:**
+                    const headerMatch = paragraph.match(/^\*\*(.+?):\*\*\n?(.*)$/s)
+
+                    if (headerMatch) {
+                      const headerText = headerMatch[1]
+                      const content = headerMatch[2]
+
+                      // Header with bullet list
+                      if (content.includes('• **')) {
+                        const items = content.split('\n').filter(item => item.trim())
+                        return (
+                          <div key={idx}>
+                            <h3 className="text-gold font-heading text-xl font-bold mt-6 mb-3">
+                              {headerText}:
+                            </h3>
+                            <ul className="space-y-2 mb-4">
+                              {items.map((item, itemIdx) => {
+                                const match = item.match(/• \*\*(.+?)\*\* - (.+)/)
+                                if (match) {
+                                  return (
+                                    <li key={itemIdx} className="flex items-start gap-2 text-gray-300">
+                                      <span className="text-gold mt-1.5">
+                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                        </svg>
+                                      </span>
+                                      <span>
+                                        <strong className="text-white">{match[1]}</strong> - {match[2]}
+                                      </span>
+                                    </li>
+                                  )
+                                }
+                                return null
+                              })}
+                            </ul>
+                          </div>
+                        )
+                      }
+
+                      // Header with regular text
                       return (
-                        <h3 key={idx} className="text-gold font-heading text-xl font-bold mt-6 mb-3">
-                          {paragraph.replace(/\*\*/g, '')}
-                        </h3>
-                      )
-                    } else if (paragraph.includes('• **')) {
-                      // Bullet list
-                      const items = paragraph.split('\n').filter(item => item.trim())
-                      return (
-                        <ul key={idx} className="space-y-2 mb-4">
-                          {items.map((item, itemIdx) => {
-                            const match = item.match(/• \*\*(.+?)\*\* - (.+)/)
-                            if (match) {
-                              return (
-                                <li key={itemIdx} className="flex items-start gap-2 text-gray-300">
-                                  <span className="text-gold mt-1.5">
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                  </span>
-                                  <span>
-                                    <strong className="text-white">{match[1]}</strong> - {match[2]}
-                                  </span>
-                                </li>
-                              )
-                            }
-                            return null
-                          })}
-                        </ul>
-                      )
-                    } else {
-                      // Regular paragraph
-                      return (
-                        <p key={idx} className="text-gray-400 leading-relaxed mb-4">
-                          {paragraph}
-                        </p>
+                        <div key={idx}>
+                          <h3 className="text-gold font-heading text-xl font-bold mt-6 mb-3">
+                            {headerText}:
+                          </h3>
+                          <p className="text-gray-400 leading-relaxed mb-4">
+                            {content}
+                          </p>
+                        </div>
                       )
                     }
+
+                    // Regular paragraph
+                    return (
+                      <p key={idx} className="text-gray-400 leading-relaxed mb-4">
+                        {paragraph}
+                      </p>
+                    )
                   })}
                 </motion.div>
                 
