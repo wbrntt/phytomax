@@ -259,10 +259,10 @@ function IngredientModal({ ingredient, isOpen, onClose }) {
                   transition={{ delay: 0.5 }}
                 >
                   <a
-                    href="https://www.facebook.com/messages/t/phytomax.shop"
+                    href="https://www.facebook.com/phytomax.shop"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-gold hover:bg-gold-dark text-black font-bold px-6 py-3 rounded-xl transition-colors"
+                    className="inline-flex items-center gap-2 bg-[#c39f2f] hover:bg-[#ad8d29] text-black font-bold px-6 py-3 rounded-xl transition-colors"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.13.26.35.27.57l.05 1.78c.04.57.61.94 1.13.71l1.98-.87c.17-.08.36-.1.55-.06.91.23 1.88.35 2.88.35 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm5.89 7.73l-2.88 4.08c-.38.54-1.12.67-1.65.29l-2.29-1.72a.5.5 0 00-.6 0l-3.09 2.35c-.41.31-.95-.18-.68-.62l2.88-4.08c.38-.54 1.12-.67 1.65-.29l2.29 1.72a.5.5 0 00.6 0l3.09-2.35c.41-.31.95.18.68.62z"/>

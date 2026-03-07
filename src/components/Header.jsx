@@ -59,10 +59,10 @@ export default function Header() {
         
         {/* CTA Button */}
         <motion.a
-          href="https://www.facebook.com/messages/t/phytomax.shop"
+          href="https://www.facebook.com/phytomax.shop"
           target="_blank"
           rel="noopener noreferrer"
-          className="relative inline-flex items-center gap-2 bg-gold text-black font-bold text-sm px-6 py-2.5 rounded-full overflow-hidden group"
+          className="relative inline-flex items-center gap-2 bg-[#c39f2f] hover:bg-[#ad8d29] text-black font-bold text-sm px-6 py-2.5 rounded-full overflow-hidden group transition-colors"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
           initial={{ opacity: 0, x: 20 }}

@@ -2,7 +2,7 @@ import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 
 export default function CTABanner() {
-  const messengerLink = "https://www.facebook.com/messages/t/phytomax.shop"
+  const messengerLink = "https://www.facebook.com/phytomax.shop"
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
   const { scrollYProgress } = useScroll({
@@ -17,7 +17,7 @@ export default function CTABanner() {
     <section ref={sectionRef} className="relative py-24 md:py-32 px-6 overflow-hidden">
       {/* Animated Background */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-gold-dark via-gold to-gold-dark"
+        className="absolute inset-0 bg-[#c39f2f]"
         style={{ 
           backgroundSize: '200% 100%',
           x: backgroundX,

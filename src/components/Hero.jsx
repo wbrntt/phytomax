@@ -49,7 +49,7 @@ function GlowOrb({ className }) {
 }
 
 export default function Hero() {
-  const messengerLink = "https://www.facebook.com/messages/t/phytomax.shop"
+  const messengerLink = "https://www.facebook.com/phytomax.shop"
   const containerRef = useRef(null)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   
@@ -203,7 +203,7 @@ export default function Hero() {
                 href={messengerLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative inline-flex items-center gap-3 bg-gold text-black font-bold text-lg md:text-xl px-10 py-4 rounded-lg overflow-hidden"
+                className="group relative inline-flex items-center gap-3 bg-[#c39f2f] hover:bg-[#ad8d29] text-black font-bold text-lg md:text-xl px-10 py-4 rounded-lg overflow-hidden transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >
