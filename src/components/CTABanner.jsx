@@ -2,7 +2,7 @@ import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 
 export default function CTABanner() {
-  const messengerLink = "https://m.me/61584867212520"
+  const messengerLink = "https://www.facebook.com/messages/t/phytomax.shop"
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
   const { scrollYProgress } = useScroll({

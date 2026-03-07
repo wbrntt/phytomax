@@ -259,7 +259,7 @@ function IngredientModal({ ingredient, isOpen, onClose }) {
                   transition={{ delay: 0.5 }}
                 >
                   <a
-                    href="https://m.me/61584867212520"
+                    href="https://www.facebook.com/messages/t/phytomax.shop"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-gold hover:bg-gold-dark text-black font-bold px-6 py-3 rounded-xl transition-colors"

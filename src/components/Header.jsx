@@ -59,7 +59,7 @@ export default function Header() {
         
         {/* CTA Button */}
         <motion.a
-          href="https://m.me/61584867212520"
+          href="https://www.facebook.com/messages/t/phytomax.shop"
           target="_blank"
           rel="noopener noreferrer"
           className="relative inline-flex items-center gap-2 bg-gold text-black font-bold text-sm px-6 py-2.5 rounded-full overflow-hidden group"
