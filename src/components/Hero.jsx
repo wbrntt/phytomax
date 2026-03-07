@@ -49,7 +49,7 @@ function GlowOrb({ className }) {
 }
 
 export default function Hero() {
-  const messengerLink = "https://m.me/phytomaxmu"
+  const messengerLink = "https://m.me/61584867212520"
   const containerRef = useRef(null)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   

@@ -112,7 +112,7 @@ export default function PrivacyPolicy() {
               <h2 className="text-xl font-bold text-white mb-4">9. Contact Us</h2>
               <p>
                 For any questions about this Privacy Policy or to exercise your rights, please contact us through our{' '}
-                <a href="https://m.me/phytomaxmu" className="text-gold hover:underline" target="_blank" rel="noopener noreferrer">
+                <a href="https://m.me/61584867212520" className="text-gold hover:underline" target="_blank" rel="noopener noreferrer">
                   Facebook Messenger
                 </a>.
               </p>
