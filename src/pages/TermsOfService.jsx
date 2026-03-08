@@ -47,10 +47,10 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-xl font-bold text-white mb-4">3. Orders and Payment</h2>
               <p>
-                All orders are subject to availability and confirmation of the order price. We reserve the right to refuse any order. Payment must be made in full before dispatch of products.
+                All orders are subject to availability and confirmation of the order price. We reserve the right to refuse any order. Available payment methods may include Juice, local bank transfer, and cash on delivery.
               </p>
               <p className="mt-4">
-                Orders submitted through our website may require a valid Juice payment confirmation reference before they are processed for delivery.
+                Orders paid by Juice or local bank transfer require a valid payment confirmation code before they are processed for delivery. Cash on delivery orders are confirmed separately before dispatch.
               </p>
             </section>
 

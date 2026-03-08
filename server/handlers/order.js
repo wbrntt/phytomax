@@ -7,10 +7,26 @@ const FIELD_LIMITS = {
   email: 120,
   deliveryAddress: 300,
   productSku: 80,
+  paymentMethod: 40,
+  paymentConfirmationCode: 160,
   quantity: 4,
-  juicePaymentConfirmation: 160,
   notes: 500,
   website: 120,
+}
+
+const PAYMENT_METHODS = {
+  juice: {
+    label: 'Juice',
+    requiresConfirmation: true,
+  },
+  bank_transfer: {
+    label: 'Local Bank Transfer',
+    requiresConfirmation: true,
+  },
+  cash_on_delivery: {
+    label: 'Cash on Delivery',
+    requiresConfirmation: false,
+  },
 }
 
 function sanitize(value, maxLength) {
@@ -74,11 +90,12 @@ async function sendEmailNotification(order) {
     `Quantity: ${order.quantity}`,
     `Unit price: MUR ${order.unitPriceMUR}`,
     `Total: MUR ${order.totalPriceMUR}`,
+    `Payment method: ${order.paymentMethod}`,
+    `Payment confirmation code: ${order.paymentConfirmationCode || 'Not required'}`,
     `Customer: ${order.fullName}`,
     `Phone: ${order.phone}`,
     `Email: ${order.email || 'Not provided'}`,
     `Delivery address: ${order.deliveryAddress}`,
-    `Juice payment confirmation: ${order.juicePaymentConfirmation}`,
     `Notes: ${order.notes || 'None'}`,
   ].join('\n')
 
@@ -89,11 +106,12 @@ async function sendEmailNotification(order) {
       <p><strong>Quantity:</strong> ${order.quantity}</p>
       <p><strong>Unit price:</strong> MUR ${order.unitPriceMUR}</p>
       <p><strong>Total:</strong> MUR ${order.totalPriceMUR}</p>
+      <p><strong>Payment method:</strong> ${escapeHtml(order.paymentMethod)}</p>
+      <p><strong>Payment confirmation code:</strong><br>${escapeHtml(order.paymentConfirmationCode || 'Not required')}</p>
       <p><strong>Customer:</strong> ${escapeHtml(order.fullName)}</p>
       <p><strong>Phone:</strong> ${escapeHtml(order.phone)}</p>
       <p><strong>Email:</strong> ${escapeHtml(order.email || 'Not provided')}</p>
       <p><strong>Delivery address:</strong><br>${escapeHtml(order.deliveryAddress).replace(/\n/g, '<br>')}</p>
-      <p><strong>Juice payment confirmation:</strong><br>${escapeHtml(order.juicePaymentConfirmation)}</p>
       <p><strong>Notes:</strong><br>${escapeHtml(order.notes || 'None').replace(/\n/g, '<br>')}</p>
     </div>
   `
@@ -130,8 +148,9 @@ export async function handleOrderRequest(request) {
     email: sanitize(request.body?.email, FIELD_LIMITS.email),
     deliveryAddress: sanitize(request.body?.deliveryAddress, FIELD_LIMITS.deliveryAddress),
     productSku: sanitize(request.body?.productSku, FIELD_LIMITS.productSku),
+    paymentMethod: sanitize(request.body?.paymentMethod, FIELD_LIMITS.paymentMethod),
+    paymentConfirmationCode: sanitize(request.body?.paymentConfirmationCode, FIELD_LIMITS.paymentConfirmationCode),
     quantity: sanitize(request.body?.quantity, FIELD_LIMITS.quantity),
-    juicePaymentConfirmation: sanitize(request.body?.juicePaymentConfirmation, FIELD_LIMITS.juicePaymentConfirmation),
     notes: sanitize(request.body?.notes, FIELD_LIMITS.notes),
     website: sanitize(request.body?.website, FIELD_LIMITS.website),
   }
@@ -145,8 +164,8 @@ export async function handleOrderRequest(request) {
     ['phone', 'Phone number'],
     ['deliveryAddress', 'Delivery address'],
     ['productSku', 'Product'],
+    ['paymentMethod', 'Payment method'],
     ['quantity', 'Quantity'],
-    ['juicePaymentConfirmation', 'Juice payment confirmation'],
   ].find(([key]) => !orderInput[key])
 
   if (missingField) {
@@ -159,6 +178,18 @@ export async function handleOrderRequest(request) {
     return createJsonResponse(400, { error: 'Quantity must be at least 1.' })
   }
 
+  const paymentMethod = PAYMENT_METHODS[orderInput.paymentMethod]
+
+  if (!paymentMethod) {
+    return createJsonResponse(400, { error: 'Select a valid payment method.' })
+  }
+
+  if (paymentMethod.requiresConfirmation && !orderInput.paymentConfirmationCode) {
+    return createJsonResponse(400, {
+      error: `${paymentMethod.label} requires a payment confirmation code.`,
+    })
+  }
+
   try {
     const savedOrder = await submitOrder({
       orderId: createOrderId(),
@@ -166,11 +197,12 @@ export async function handleOrderRequest(request) {
       status: 'new',
       productSku: orderInput.productSku,
       quantity,
+      paymentMethod: orderInput.paymentMethod,
+      paymentConfirmationCode: orderInput.paymentConfirmationCode,
       fullName: orderInput.fullName,
       phone: orderInput.phone,
       email: orderInput.email,
       deliveryAddress: orderInput.deliveryAddress,
-      juicePaymentConfirmation: orderInput.juicePaymentConfirmation,
       notes: orderInput.notes,
     })
 
@@ -179,9 +211,10 @@ export async function handleOrderRequest(request) {
       `Product: ${savedOrder.productName}`,
       `Quantity: ${savedOrder.quantity}`,
       `Total: MUR ${savedOrder.totalPriceMUR}`,
+      `Payment method: ${savedOrder.paymentMethod}`,
+      `Payment confirmation: ${savedOrder.paymentConfirmationCode || 'Not required'}`,
       `Customer: ${savedOrder.fullName}`,
       `Phone: ${savedOrder.phone}`,
-      `Juice confirmation: ${savedOrder.juicePaymentConfirmation}`,
     ].join('\n')
 
     const notificationResults = await Promise.allSettled([

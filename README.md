@@ -7,7 +7,7 @@ Landing page and order flow for Phytomax, built with React + Vite and deployable
 The order form is backed by Google Sheets through a Google Apps Script web app plus Vercel serverless functions:
 
 - `GET /api/products` reads the live catalog and stock from the `Products` sheet through Apps Script
-- `POST /api/order` validates the order, decrements stock, appends the order to the `Orders` sheet, and optionally sends notifications
+- `POST /api/order` validates the order, payment method, and confirmation code requirements, decrements stock, appends the order to the `Orders` sheet, and optionally sends notifications
 - `GET /api/health` returns a lightweight deployment and integration healthcheck
 
 Vercel keeps the public API surface stable for the frontend. Google Apps Script is the bridge that reads and writes the spreadsheet without service-account JSON keys.
@@ -33,7 +33,9 @@ Row 1 is for headers. Data starts on row 2.
 
 Row 1 is for headers. Orders are appended automatically in this order:
 
-`createdAt`, `orderId`, `productSku`, `productName`, `quantity`, `unitPriceMUR`, `totalPriceMUR`, `fullName`, `phone`, `email`, `deliveryAddress`, `juicePaymentConfirmation`, `notes`, `status`
+`createdAt`, `orderId`, `productSku`, `productName`, `quantity`, `unitPriceMUR`, `totalPriceMUR`, `fullName`, `phone`, `email`, `paymentMethod`, `paymentConfirmationCode`, `deliveryAddress`, `notes`, `status`
+
+If you already created an `Orders` tab from the older template, add the `paymentMethod` and `paymentConfirmationCode` columns before taking live orders.
 
 CSV templates are included here:
 
@@ -66,6 +68,11 @@ Required:
 
 - `GOOGLE_APPS_SCRIPT_URL`
 - `GOOGLE_APPS_SCRIPT_SECRET`
+- `VITE_MCB_ACCOUNT_NUMBER`
+
+Recommended:
+
+- `VITE_PAYMENT_COMPANY_NAME` default: `Phytomax Mauritius`
 
 Optional:
 

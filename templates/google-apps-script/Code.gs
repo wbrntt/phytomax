@@ -7,7 +7,12 @@ const CONFIG = {
 }
 
 const PRODUCT_COLUMN_COUNT = 6
-const ORDER_COLUMNS = 14
+const ORDER_COLUMNS = 15
+const PAYMENT_METHOD_LABELS = {
+  juice: 'Juice',
+  bank_transfer: 'Local Bank Transfer',
+  cash_on_delivery: 'Cash on Delivery',
+}
 
 function doGet(e) {
   return handleRequest_(e)
@@ -176,8 +181,9 @@ function buildOrderRow_(order) {
     order.fullName,
     order.phone,
     order.email || '',
+    order.paymentMethod,
+    order.paymentConfirmationCode || '',
     order.deliveryAddress,
-    order.juicePaymentConfirmation,
     order.notes || '',
     order.status,
   ]]
@@ -189,9 +195,19 @@ function submitOrder_(inputOrder) {
   }
 
   const quantity = Math.max(0, Math.floor(parseNumber_(inputOrder.quantity)))
+  const paymentMethod = normalizePaymentMethod_(inputOrder.paymentMethod)
+  const paymentConfirmationCode = limitText_(inputOrder.paymentConfirmationCode, 160)
 
   if (quantity < 1) {
     throwOrderError_(400, 'Quantity must be at least 1.')
+  }
+
+  if (!paymentMethod) {
+    throwOrderError_(400, 'Select a valid payment method.')
+  }
+
+  if (requiresPaymentConfirmation_(paymentMethod) && !paymentConfirmationCode) {
+    throwOrderError_(400, getPaymentMethodLabel_(paymentMethod) + ' requires a payment confirmation code.')
   }
 
   const lock = LockService.getScriptLock()
@@ -224,12 +240,13 @@ function submitOrder_(inputOrder) {
       fullName: limitText_(inputOrder.fullName, 80),
       phone: limitText_(inputOrder.phone, 40),
       email: limitText_(inputOrder.email, 120),
+      paymentMethod: getPaymentMethodLabel_(paymentMethod),
+      paymentConfirmationCode: paymentConfirmationCode,
       deliveryAddress: limitText_(inputOrder.deliveryAddress, 300),
-      juicePaymentConfirmation: limitText_(inputOrder.juicePaymentConfirmation, 160),
       notes: limitText_(inputOrder.notes, 500),
     }
 
-    if (!order.fullName || !order.phone || !order.deliveryAddress || !order.juicePaymentConfirmation) {
+    if (!order.fullName || !order.phone || !order.deliveryAddress) {
       throwOrderError_(400, 'Missing required order fields.')
     }
 
@@ -254,6 +271,19 @@ function throwOrderError_(code, message) {
   const error = new Error(message)
   error.code = code
   throw error
+}
+
+function normalizePaymentMethod_(value) {
+  const normalized = normalizeText_(String(value || '')).toLowerCase()
+  return PAYMENT_METHOD_LABELS[normalized] ? normalized : ''
+}
+
+function requiresPaymentConfirmation_(value) {
+  return value === 'juice' || value === 'bank_transfer'
+}
+
+function getPaymentMethodLabel_(value) {
+  return PAYMENT_METHOD_LABELS[value] || 'Unknown'
 }
 
 function createOrderId_() {

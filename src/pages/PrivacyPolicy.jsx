@@ -35,7 +35,7 @@ export default function PrivacyPolicy() {
               <ul className="list-disc list-inside mt-4 space-y-2 ml-4">
                 <li>Contact information (name, phone number, delivery address)</li>
                 <li>Order history and preferences</li>
-                <li>Order form submissions and Juice payment confirmation references</li>
+                <li>Order form submissions, payment method selections, and payment confirmation codes where applicable</li>
                 <li>Communication records through Facebook or our website order form</li>
                 <li>Website usage data (cookies, browsing patterns)</li>
               </ul>
@@ -48,7 +48,7 @@ export default function PrivacyPolicy() {
               </p>
               <ul className="list-disc list-inside mt-4 space-y-2 ml-4">
                 <li>Process and fulfill your orders</li>
-                <li>Verify submitted payment confirmation details</li>
+                <li>Verify submitted payment confirmation details when required</li>
                 <li>Communicate about your orders and inquiries</li>
                 <li>Improve our products and services</li>
                 <li>Send promotional communications (with your consent)</li>

@@ -2,17 +2,49 @@ import { motion, useInView } from 'framer-motion'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getApiUrl } from '../lib/api'
 
+const viteEnv = typeof import.meta !== 'undefined' ? import.meta.env : undefined
+const paymentCompanyName = ((viteEnv && viteEnv.VITE_PAYMENT_COMPANY_NAME) || 'Phytomax Mauritius').trim()
+const mcbAccountNumber = ((viteEnv && viteEnv.VITE_MCB_ACCOUNT_NUMBER) || '').trim()
+
 const initialFormData = {
   fullName: '',
   phone: '',
   email: '',
   deliveryAddress: '',
   productSku: '',
+  paymentMethod: 'juice',
+  paymentConfirmationCode: '',
   quantity: '1',
-  juicePaymentConfirmation: '',
   notes: '',
   website: '',
 }
+
+const paymentOptions = [
+  {
+    value: 'juice',
+    title: 'Juice',
+    description: 'Pay now with Juice and paste the confirmation code before submitting.',
+    confirmationLabel: 'Juice Confirmation Code',
+    confirmationPlaceholder: 'Paste the Juice confirmation text or reference',
+    requiresConfirmation: true,
+  },
+  {
+    value: 'bank_transfer',
+    title: 'Local Bank Transfer',
+    description: 'Transfer to our MCB account, then paste the transfer confirmation code.',
+    confirmationLabel: 'Bank Transfer Confirmation Code',
+    confirmationPlaceholder: 'Paste the bank transfer reference or confirmation code',
+    requiresConfirmation: true,
+  },
+  {
+    value: 'cash_on_delivery',
+    title: 'Cash on Delivery',
+    description: 'Pay the courier on delivery. No confirmation code is required.',
+    confirmationLabel: '',
+    confirmationPlaceholder: '',
+    requiresConfirmation: false,
+  },
+]
 
 const orderSteps = [
   {
@@ -20,12 +52,12 @@ const orderSteps = [
     description: 'Pick from the live product list powered by your Google Sheets inventory.',
   },
   {
-    title: 'Pay with Juice',
-    description: 'Complete the transfer in Juice before sending the order request.',
+    title: 'Choose your payment',
+    description: 'Select Juice, local bank transfer, or cash on delivery before submitting your request.',
   },
   {
-    title: 'Submit confirmation',
-    description: 'Paste the payment confirmation and we will verify the order and arrange delivery.',
+    title: 'Submit your order',
+    description: 'Prepaid orders need a confirmation code so we can verify payment and arrange delivery quickly.',
   },
 ]
 
@@ -108,6 +140,11 @@ export default function OrderForm() {
     () => products.find((product) => product.sku === formData.productSku) || null,
     [products, formData.productSku],
   )
+  const selectedPaymentOption = useMemo(
+    () => paymentOptions.find((option) => option.value === formData.paymentMethod) || paymentOptions[0],
+    [formData.paymentMethod],
+  )
+  const paymentRequiresConfirmation = selectedPaymentOption.requiresConfirmation
 
   const orderTotal = selectedProduct ? selectedProduct.priceMUR * (Number.parseInt(formData.quantity, 10) || 1) : 0
   const hasAvailableProducts = products.some((product) => product.available)
@@ -120,6 +157,15 @@ export default function OrderForm() {
       setFormData((current) => ({
         ...current,
         quantity: digitsOnly ? String(Math.max(Number.parseInt(digitsOnly, 10), 1)) : '',
+      }))
+      return
+    }
+
+    if (name === 'paymentMethod') {
+      setFormData((current) => ({
+        ...current,
+        paymentMethod: value,
+        paymentConfirmationCode: '',
       }))
       return
     }
@@ -195,7 +241,7 @@ export default function OrderForm() {
           </h2>
 
           <p className="mt-5 max-w-xl text-base leading-relaxed text-white/72 md:text-lg">
-            Products and inventory are loaded from Google Sheets, so the form always reflects what is actually available before you submit payment confirmation.
+            Products and inventory are loaded from Google Sheets, so the form always reflects what is actually available before you choose a payment method and submit your order.
           </p>
 
           <div className="mt-8 space-y-4">
@@ -394,22 +440,86 @@ export default function OrderForm() {
               />
             </label>
 
-            <label className="space-y-2">
-              <span className="text-sm font-medium text-white">Juice Payment Confirmation</span>
-              <input
-                type="text"
-                name="juicePaymentConfirmation"
-                value={formData.juicePaymentConfirmation}
-                onChange={handleChange}
-                maxLength={160}
-                required
-                className="w-full rounded-2xl border border-white/10 bg-black/35 px-4 py-3 text-white outline-none transition focus:border-[#c39f2f] focus:ring-2 focus:ring-[#c39f2f]/30"
-                placeholder="Paste the Juice confirmation text or reference"
-              />
-              <p className="text-sm leading-relaxed text-white/55">
-                Use the confirmation exactly as shown in Juice so we can match the payment quickly.
-              </p>
-            </label>
+            <div className="space-y-3">
+              <span className="text-sm font-medium text-white">Payment Method</span>
+              <div className="grid gap-3 md:grid-cols-3">
+                {paymentOptions.map((option) => {
+                  const isSelected = formData.paymentMethod === option.value
+
+                  return (
+                    <label
+                      key={option.value}
+                      className={`cursor-pointer rounded-2xl border px-4 py-4 transition ${
+                        isSelected
+                          ? 'border-[#c39f2f] bg-[#c39f2f]/12'
+                          : 'border-white/10 bg-black/25 hover:border-white/20'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={option.value}
+                        checked={isSelected}
+                        onChange={handleChange}
+                        className="sr-only"
+                      />
+                      <p className="text-sm font-semibold text-white">{option.title}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-white/60">{option.description}</p>
+                    </label>
+                  )
+                })}
+              </div>
+            </div>
+
+            {formData.paymentMethod !== 'cash_on_delivery' && (
+              <div className="rounded-2xl border border-[#c39f2f]/20 bg-[#c39f2f]/10 p-5">
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#f1d883]">
+                      {selectedPaymentOption.title} payment details
+                    </p>
+                    <h4 className="mt-2 font-heading text-2xl font-bold text-white">Pay to this MCB account</h4>
+                    <p className="mt-2 max-w-lg text-sm leading-relaxed text-white/70">
+                      Use the exact company name and account number below, then paste the confirmation code before you submit the order.
+                    </p>
+                  </div>
+
+                  <div className="grid min-w-[240px] gap-2 rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm text-white/75">
+                    <div className="flex items-center justify-between gap-4">
+                      <span>Company name</span>
+                      <strong className="text-white">{paymentCompanyName}</strong>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <span>MCB account number</span>
+                      <strong className="text-white">{mcbAccountNumber || 'Set VITE_MCB_ACCOUNT_NUMBER'}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {paymentRequiresConfirmation ? (
+              <label className="space-y-2">
+                <span className="text-sm font-medium text-white">{selectedPaymentOption.confirmationLabel}</span>
+                <input
+                  type="text"
+                  name="paymentConfirmationCode"
+                  value={formData.paymentConfirmationCode}
+                  onChange={handleChange}
+                  maxLength={160}
+                  required={paymentRequiresConfirmation}
+                  className="w-full rounded-2xl border border-white/10 bg-black/35 px-4 py-3 text-white outline-none transition focus:border-[#c39f2f] focus:ring-2 focus:ring-[#c39f2f]/30"
+                  placeholder={selectedPaymentOption.confirmationPlaceholder}
+                />
+                <p className="text-sm leading-relaxed text-white/55">
+                  Use the confirmation exactly as shown by your payment method so we can match the payment quickly.
+                </p>
+              </label>
+            ) : (
+              <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-relaxed text-white/60">
+                Cash on delivery orders do not require a confirmation code. We will confirm the order and payment on delivery.
+              </div>
+            )}
 
             <label className="space-y-2">
               <span className="text-sm font-medium text-white">Notes (optional)</span>
@@ -455,7 +565,7 @@ export default function OrderForm() {
               </button>
 
               <p className="max-w-sm text-sm leading-relaxed text-white/55">
-                By submitting, you confirm the payment details and selected quantity are accurate for this order.
+                By submitting, you confirm the selected payment method, payment details if applicable, and quantity are accurate for this order.
               </p>
             </div>
           </form>

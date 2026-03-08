@@ -5,6 +5,32 @@ function hasEnv(name) {
   return Boolean(process.env[name])
 }
 
+function getAppsScriptErrorDetails(error) {
+  const details = {}
+
+  if (Number.isInteger(error?.statusCode)) {
+    details.statusCode = error.statusCode
+  }
+
+  if (Number.isInteger(error?.details?.responseStatus)) {
+    details.responseStatus = error.details.responseStatus
+  }
+
+  if (error?.details?.contentType) {
+    details.contentType = error.details.contentType
+  }
+
+  if (error?.details?.responseHost) {
+    details.responseHost = error.details.responseHost
+  }
+
+  if (typeof error?.details?.redirected === 'boolean') {
+    details.redirected = error.details.redirected
+  }
+
+  return details
+}
+
 export async function handleHealthRequest(request) {
   if (request.method !== 'GET') {
     return createJsonResponse(405, { error: 'Method not allowed.' }, { Allow: 'GET' })
@@ -38,6 +64,7 @@ export async function handleHealthRequest(request) {
         configured: true,
         reachable: false,
         error: error.message || 'Google Apps Script healthcheck failed.',
+        ...getAppsScriptErrorDetails(error),
       }
     }
   }
