@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import bgImage from '../assets/bg.jpeg'
 import HeroProduct3D from './HeroProduct3D'
+import { ORDER_FORM_LINK, handleOrderFormLinkClick } from '../lib/orderFormLink'
 
 // Floating particle component
 function FloatingParticle({ delay, duration, size, left, top }) {
@@ -49,7 +50,6 @@ function GlowOrb({ className }) {
 }
 
 export default function Hero() {
-  const orderFormLink = "#order-form"
   const containerRef = useRef(null)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   
@@ -200,7 +200,8 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.5 }}
             >
               <motion.a 
-                href={orderFormLink}
+                href={ORDER_FORM_LINK}
+                onClick={handleOrderFormLinkClick}
                 className="group relative inline-flex items-center gap-3 bg-[#c39f2f] hover:bg-[#ad8d29] text-black font-bold text-lg md:text-xl px-10 py-4 rounded-lg overflow-hidden transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}

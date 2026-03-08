@@ -1,8 +1,8 @@
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
+import { ORDER_FORM_LINK, handleOrderFormLinkClick } from '../lib/orderFormLink'
 
 export default function CTABanner() {
-  const orderFormLink = "#order-form"
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
   const { scrollYProgress } = useScroll({
@@ -157,7 +157,8 @@ export default function CTABanner() {
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           <motion.a 
-            href={orderFormLink}
+            href={ORDER_FORM_LINK}
+            onClick={handleOrderFormLinkClick}
             className="group relative inline-flex items-center justify-center gap-3 bg-black text-white font-bold px-10 py-5 rounded-xl overflow-hidden"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}

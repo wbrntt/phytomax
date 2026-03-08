@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from 'react'
 import branchImg from '../assets/branch.png'
 import palmsImg from '../assets/palms.png'
 import goatImg from '../assets/goat.png'
+import { ORDER_FORM_LINK, scrollToOrderForm } from '../lib/orderFormLink'
 
 const ingredients = [
   {
@@ -84,6 +85,14 @@ function IngredientModal({ ingredient, isOpen, onClose }) {
       document.body.style.overflow = 'unset'
     }
   }, [isOpen])
+
+  const handleOrderClick = (event) => {
+    event.preventDefault()
+    onClose()
+    window.requestAnimationFrame(() => {
+      scrollToOrderForm()
+    })
+  }
 
   return (
     <AnimatePresence>
@@ -259,7 +268,8 @@ function IngredientModal({ ingredient, isOpen, onClose }) {
                   transition={{ delay: 0.5 }}
                 >
                   <a
-                    href="#order-form"
+                    href={ORDER_FORM_LINK}
+                    onClick={handleOrderClick}
                     className="inline-flex items-center gap-2 bg-[#c39f2f] hover:bg-[#ad8d29] text-black font-bold px-6 py-3 rounded-xl transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
