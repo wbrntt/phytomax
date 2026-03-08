@@ -202,7 +202,7 @@ export default function Hero() {
               <motion.a 
                 href={ORDER_FORM_LINK}
                 onClick={handleOrderFormLinkClick}
-                className="group relative inline-flex items-center gap-3 bg-[#c39f2f] hover:bg-[#ad8d29] text-black font-bold text-lg md:text-xl px-10 py-4 rounded-lg overflow-hidden transition-colors"
+                className="group relative inline-flex items-center gap-3 btn-gold-primary font-bold text-lg md:text-xl px-10 py-4 rounded-lg overflow-hidden"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >

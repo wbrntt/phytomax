@@ -17,11 +17,8 @@ export default function CTABanner() {
     <section ref={sectionRef} className="relative py-24 md:py-32 px-6 overflow-hidden">
       {/* Animated Background */}
       <motion.div
-        className="absolute inset-0 bg-[#c39f2f]"
-        style={{ 
-          backgroundSize: '200% 100%',
-          x: backgroundX,
-        }}
+        className="absolute inset-0 cta-gold-surface"
+        style={{ x: backgroundX }}
       />
       
       {/* Animated Pattern Overlay */}
@@ -159,13 +156,13 @@ export default function CTABanner() {
           <motion.a 
             href={ORDER_FORM_LINK}
             onClick={handleOrderFormLinkClick}
-            className="group relative inline-flex items-center justify-center gap-3 bg-black text-white font-bold px-10 py-5 rounded-xl overflow-hidden"
+            className="group relative inline-flex items-center justify-center gap-3 btn-gold-primary font-bold px-10 py-5 rounded-xl overflow-hidden"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
           >
             {/* Button Glow */}
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-gold/0 via-gold/30 to-gold/0"
+              className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/35 to-white/0"
               animate={{
                 x: ['-100%', '100%'],
               }}
@@ -180,7 +177,7 @@ export default function CTABanner() {
             </svg>
             <span className="relative text-lg">Open Order Form</span>
             <motion.div
-              className="absolute inset-0 border-2 border-white/20 rounded-xl"
+              className="absolute inset-0 border-2 border-black/10 rounded-xl"
               animate={{
                 opacity: [0, 1, 0],
                 scale: [1, 1.05, 1],

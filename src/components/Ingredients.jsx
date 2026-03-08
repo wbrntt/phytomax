@@ -270,7 +270,7 @@ function IngredientModal({ ingredient, isOpen, onClose }) {
                   <a
                     href={ORDER_FORM_LINK}
                     onClick={handleOrderClick}
-                    className="inline-flex items-center gap-2 bg-[#c39f2f] hover:bg-[#ad8d29] text-black font-bold px-6 py-3 rounded-xl transition-colors"
+                    className="inline-flex items-center gap-2 btn-gold-primary font-bold px-6 py-3 rounded-xl"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14l-1 11H6L5 8zm4-3a3 3 0 016 0v3H9V5z" />

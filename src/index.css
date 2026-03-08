@@ -7,6 +7,13 @@
   --color-gold-dark: #B8956E;
   --color-gold-light: #E8C9A0;
   --color-gold-bright: #F5DEB3;
+  --color-gold-metal: #D3AF37;
+  --color-gold-metal-highlight: #E1B768;
+  --color-gold-metal-shadow: #B0892D;
+  --color-gold-champagne: #F7E6CA;
+  --color-gold-champagne-soft: #F0D29F;
+  --color-gold-champagne-deep: #D2912D;
+  --color-gold-bronze: #AD761A;
   
   --font-family-heading: 'Oswald', sans-serif;
   --font-family-body: 'Inter', sans-serif;
@@ -270,6 +277,51 @@ body {
 .btn-premium:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(212, 165, 116, 0.4);
+}
+
+.btn-gold-primary {
+  color: #050505;
+  background: linear-gradient(
+    180deg,
+    var(--color-gold-metal-highlight) 0%,
+    var(--color-gold-metal) 58%,
+    var(--color-gold-metal-shadow) 100%
+  );
+  border: 1px solid rgba(101, 69, 9, 0.18);
+  box-shadow:
+    0 14px 30px rgba(173, 118, 26, 0.22),
+    inset 0 1px 0 rgba(255, 246, 214, 0.65);
+  transition: box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+.btn-gold-primary:hover {
+  filter: brightness(1.04) saturate(1.03);
+  box-shadow:
+    0 18px 38px rgba(173, 118, 26, 0.28),
+    inset 0 1px 0 rgba(255, 250, 228, 0.78);
+}
+
+.btn-gold-primary:disabled {
+  filter: saturate(0.75);
+  box-shadow: none;
+}
+
+.btn-gold-primary:focus-visible {
+  outline: 2px solid rgba(255, 230, 170, 0.8);
+  outline-offset: 3px;
+}
+
+.cta-gold-surface {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 248, 229, 0.32), transparent 32%),
+    radial-gradient(circle at 80% 18%, rgba(255, 255, 255, 0.18), transparent 24%),
+    linear-gradient(
+      135deg,
+      var(--color-gold-bronze) 0%,
+      var(--color-gold-champagne-deep) 34%,
+      var(--color-gold-champagne) 100%
+    );
+  box-shadow: inset 0 1px 0 rgba(255, 248, 229, 0.28);
 }
 
 /* Luxury card hover effect */

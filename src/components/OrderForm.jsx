@@ -542,7 +542,7 @@ export default function OrderForm() {
               <button
                 type="submit"
                 disabled={isSubmitting || isLoadingProducts || !selectedProduct || !selectedProduct.available}
-                className="inline-flex items-center justify-center gap-3 rounded-2xl bg-[#c39f2f] px-6 py-4 text-base font-bold text-black transition hover:bg-[#ad8d29] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-3 rounded-2xl btn-gold-primary px-6 py-4 text-base font-bold disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14l-1 11H6L5 8zm4-3a3 3 0 016 0v3H9V5z" />

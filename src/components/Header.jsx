@@ -62,7 +62,7 @@ export default function Header() {
         <motion.a
           href={ORDER_FORM_LINK}
           onClick={handleOrderFormLinkClick}
-          className="relative inline-flex items-center gap-2 bg-[#c39f2f] hover:bg-[#ad8d29] text-black font-bold text-sm px-6 py-2.5 rounded-full overflow-hidden group transition-colors"
+          className="relative inline-flex items-center gap-2 btn-gold-primary font-bold text-sm px-6 py-2.5 rounded-full overflow-hidden group"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
           initial={{ opacity: 0, x: 20 }}
