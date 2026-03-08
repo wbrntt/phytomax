@@ -264,20 +264,6 @@ export default function OrderForm() {
             ))}
           </div>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f1d883]">Backend source</p>
-              <p className="mt-3 text-sm leading-relaxed text-white/70">
-                Manage `Products` and inventory directly in Google Sheets. The frontend loads live availability through Vercel API routes.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f1d883]">Notifications</p>
-              <p className="mt-3 text-sm leading-relaxed text-white/70">
-                New orders can notify you for free in Telegram, with optional Resend email if you also want inbox alerts.
-              </p>
-            </div>
-          </div>
         </motion.div>
 
         <motion.div
