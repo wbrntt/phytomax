@@ -35,7 +35,8 @@ export default function PrivacyPolicy() {
               <ul className="list-disc list-inside mt-4 space-y-2 ml-4">
                 <li>Contact information (name, phone number, delivery address)</li>
                 <li>Order history and preferences</li>
-                <li>Communication records through Messenger</li>
+                <li>Order form submissions and Juice payment confirmation references</li>
+                <li>Communication records through Facebook or our website order form</li>
                 <li>Website usage data (cookies, browsing patterns)</li>
               </ul>
             </section>
@@ -47,6 +48,7 @@ export default function PrivacyPolicy() {
               </p>
               <ul className="list-disc list-inside mt-4 space-y-2 ml-4">
                 <li>Process and fulfill your orders</li>
+                <li>Verify submitted payment confirmation details</li>
                 <li>Communicate about your orders and inquiries</li>
                 <li>Improve our products and services</li>
                 <li>Send promotional communications (with your consent)</li>
@@ -113,7 +115,7 @@ export default function PrivacyPolicy() {
               <p>
                 For any questions about this Privacy Policy or to exercise your rights, please contact us through our{' '}
                 <a href="https://www.facebook.com/phytomax.shop" className="text-gold hover:underline" target="_blank" rel="noopener noreferrer">
-                  Facebook Messenger
+                  Facebook page
                 </a>.
               </p>
             </section>

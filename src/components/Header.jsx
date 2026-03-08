@@ -59,9 +59,7 @@ export default function Header() {
         
         {/* CTA Button */}
         <motion.a
-          href="https://www.facebook.com/phytomax.shop"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="#order-form"
           className="relative inline-flex items-center gap-2 bg-[#c39f2f] hover:bg-[#ad8d29] text-black font-bold text-sm px-6 py-2.5 rounded-full overflow-hidden group transition-colors"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
@@ -73,10 +71,10 @@ export default function Header() {
           <motion.div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
           />
-          <svg className="relative w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.13.26.35.27.57l.05 1.78c.04.57.61.94 1.13.71l1.98-.87c.17-.08.36-.1.55-.06.91.23 1.88.35 2.88.35 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm5.89 7.73l-2.88 4.08c-.38.54-1.12.67-1.65.29l-2.29-1.72a.5.5 0 00-.6 0l-3.09 2.35c-.41.31-.95-.18-.68-.62l2.88-4.08c.38-.54 1.12-.67 1.65-.29l2.29 1.72a.5.5 0 00.6 0l3.09-2.35c.41-.31.95.18.68.62z"/>
+          <svg className="relative w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14l-1 11H6L5 8zm4-3a3 3 0 016 0v3H9V5z" />
           </svg>
-          <span className="relative">Message Us on Facebook</span>
+          <span className="relative">Order Now</span>
         </motion.a>
       </div>
       

@@ -49,6 +49,9 @@ export default function TermsOfService() {
               <p>
                 All orders are subject to availability and confirmation of the order price. We reserve the right to refuse any order. Payment must be made in full before dispatch of products.
               </p>
+              <p className="mt-4">
+                Orders submitted through our website may require a valid Juice payment confirmation reference before they are processed for delivery.
+              </p>
             </section>
 
             <section>
@@ -91,7 +94,7 @@ export default function TermsOfService() {
               <p>
                 For any questions regarding these Terms of Service, please contact us through our{' '}
                 <a href="https://www.facebook.com/phytomax.shop" className="text-gold hover:underline" target="_blank" rel="noopener noreferrer">
-                  Facebook Messenger
+                  Facebook page
                 </a>.
               </p>
             </section>

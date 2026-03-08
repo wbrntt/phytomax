@@ -5,6 +5,7 @@ import Benefits from './components/Benefits'
 import Ingredients from './components/Ingredients'
 import TrustSection from './components/TrustSection'
 import CTABanner from './components/CTABanner'
+import OrderForm from './components/OrderForm'
 import Footer from './components/Footer'
 import TermsOfService from './pages/TermsOfService'
 import PrivacyPolicy from './pages/PrivacyPolicy'
@@ -21,6 +22,7 @@ function HomePage() {
         <Ingredients />
         <TrustSection />
         <CTABanner />
+        <OrderForm />
       </main>
       <Footer />
     </div>
