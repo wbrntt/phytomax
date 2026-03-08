@@ -195,8 +195,11 @@ function submitOrder_(inputOrder) {
   }
 
   const quantity = Math.max(0, Math.floor(parseNumber_(inputOrder.quantity)))
-  const paymentMethod = normalizePaymentMethod_(inputOrder.paymentMethod)
-  const paymentConfirmationCode = limitText_(inputOrder.paymentConfirmationCode, 160)
+  const paymentMethod = normalizePaymentMethod_(inputOrder.paymentMethod) || inferLegacyPaymentMethod_(inputOrder)
+  const paymentConfirmationCode = limitText_(
+    inputOrder.paymentConfirmationCode || inputOrder.juicePaymentConfirmation,
+    160,
+  )
 
   if (quantity < 1) {
     throwOrderError_(400, 'Quantity must be at least 1.')
@@ -276,6 +279,11 @@ function throwOrderError_(code, message) {
 function normalizePaymentMethod_(value) {
   const normalized = normalizeText_(String(value || '')).toLowerCase()
   return PAYMENT_METHOD_LABELS[normalized] ? normalized : ''
+}
+
+function inferLegacyPaymentMethod_(inputOrder) {
+  const legacyConfirmation = inputOrder && inputOrder.juicePaymentConfirmation
+  return normalizeText_(String(legacyConfirmation || '')) ? 'juice' : ''
 }
 
 function requiresPaymentConfirmation_(value) {

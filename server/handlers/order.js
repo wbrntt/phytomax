@@ -199,6 +199,8 @@ export async function handleOrderRequest(request) {
       quantity,
       paymentMethod: orderInput.paymentMethod,
       paymentConfirmationCode: orderInput.paymentConfirmationCode,
+      // Keep the Apps Script bridge compatible with older deployments.
+      juicePaymentConfirmation: orderInput.paymentConfirmationCode,
       fullName: orderInput.fullName,
       phone: orderInput.phone,
       email: orderInput.email,
@@ -206,20 +208,29 @@ export async function handleOrderRequest(request) {
       notes: orderInput.notes,
     })
 
+    const normalizedSavedOrder = {
+      ...savedOrder,
+      paymentMethod: savedOrder.paymentMethod || paymentMethod.label,
+      paymentConfirmationCode:
+        savedOrder.paymentConfirmationCode ||
+        savedOrder.juicePaymentConfirmation ||
+        orderInput.paymentConfirmationCode,
+    }
+
     const notificationMessage = [
-      `New Phytomax order ${savedOrder.orderId}`,
-      `Product: ${savedOrder.productName}`,
-      `Quantity: ${savedOrder.quantity}`,
-      `Total: MUR ${savedOrder.totalPriceMUR}`,
-      `Payment method: ${savedOrder.paymentMethod}`,
-      `Payment confirmation: ${savedOrder.paymentConfirmationCode || 'Not required'}`,
-      `Customer: ${savedOrder.fullName}`,
-      `Phone: ${savedOrder.phone}`,
+      `New Phytomax order ${normalizedSavedOrder.orderId}`,
+      `Product: ${normalizedSavedOrder.productName}`,
+      `Quantity: ${normalizedSavedOrder.quantity}`,
+      `Total: MUR ${normalizedSavedOrder.totalPriceMUR}`,
+      `Payment method: ${normalizedSavedOrder.paymentMethod}`,
+      `Payment confirmation: ${normalizedSavedOrder.paymentConfirmationCode || 'Not required'}`,
+      `Customer: ${normalizedSavedOrder.fullName}`,
+      `Phone: ${normalizedSavedOrder.phone}`,
     ].join('\n')
 
     const notificationResults = await Promise.allSettled([
       sendTelegramNotification(notificationMessage),
-      sendEmailNotification(savedOrder),
+      sendEmailNotification(normalizedSavedOrder),
     ])
 
     notificationResults.forEach((result) => {
@@ -229,7 +240,7 @@ export async function handleOrderRequest(request) {
     })
 
     return createJsonResponse(200, {
-      message: `Order ${savedOrder.orderId} received. We will contact you shortly to confirm delivery.`,
+      message: `Order ${normalizedSavedOrder.orderId} received. We will contact you shortly to confirm delivery.`,
     })
   } catch (error) {
     return createJsonResponse(error.statusCode || 500, {
