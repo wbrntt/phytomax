@@ -164,6 +164,45 @@ body {
   animation: scale-in 0.6s ease-out forwards;
 }
 
+@keyframes hero-package-crossfade-in {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes hero-package-crossfade-out {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-package-float {
+  0%, 100% {
+    transform: translateY(-10px);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.hero-package-crossfade-in {
+  animation: hero-package-crossfade-in 18s ease-in-out infinite;
+}
+
+.hero-package-crossfade-out {
+  animation: hero-package-crossfade-out 18s ease-in-out infinite;
+}
+
+.hero-package-float {
+  animation: hero-package-float 7.854s ease-in-out infinite;
+}
+
 /* Slide up fade in */
 @keyframes slide-up-fade {
   0% {

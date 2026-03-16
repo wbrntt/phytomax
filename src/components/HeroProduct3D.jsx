@@ -2,7 +2,8 @@ import { useRef, useMemo, useState, useEffect, Suspense } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Float, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
-import productImage from '../assets/phytogold.png'
+import goldProductImage from '../assets/phytogold.png'
+import redProductImage from '../assets/phyto red.png'
 
 // Seeded random for deterministic particle positions
 function seededRandom(seed) {
@@ -22,15 +23,64 @@ const checkWebGLSupport = () => {
 }
 
 const SUPPORTS_WEBGL = typeof window !== 'undefined' ? checkWebGLSupport() : false
+const GOLD_PACKAGE_ASPECT_RATIO = 3392 / 2695
+const PACKAGE_FLOAT_ANGULAR_SPEED = 0.8
+const PACKAGE_FLOAT_CYCLE_SECONDS = (Math.PI * 2) / PACKAGE_FLOAT_ANGULAR_SPEED
+
+function getCoverUvTransform(containerAspectRatio, image) {
+  if (!image?.width || !image?.height) {
+    return {
+      offset: new THREE.Vector2(0, 0),
+      repeat: new THREE.Vector2(1, 1),
+    }
+  }
+
+  const imageAspectRatio = image.width / image.height
+
+  if (imageAspectRatio > containerAspectRatio) {
+    const repeatX = containerAspectRatio / imageAspectRatio
+
+    return {
+      offset: new THREE.Vector2((1 - repeatX) / 2, 0),
+      repeat: new THREE.Vector2(repeatX, 1),
+    }
+  }
+
+  const repeatY = imageAspectRatio / containerAspectRatio
+
+  return {
+    offset: new THREE.Vector2(0, (1 - repeatY) / 2),
+    repeat: new THREE.Vector2(1, repeatY),
+  }
+}
 
 // Product plane with texture and reflections
 function ProductPlane({ mousePosition }) {
   const meshRef = useRef()
+  const goldMaterialRef = useRef()
+  const redMaterialRef = useRef()
   const shaderRef = useRef()
-  const texture = useTexture(productImage)
+  const goldTexture = useTexture(goldProductImage)
+  const redTexture = useTexture(redProductImage)
+  const aspectRatio = goldTexture?.image?.width / goldTexture?.image?.height || GOLD_PACKAGE_ASPECT_RATIO
+  const redTextureTransform = useMemo(
+    () => getCoverUvTransform(aspectRatio, redTexture?.image),
+    [aspectRatio, redTexture]
+  )
+  const redOverlayTexture = useMemo(() => {
+    const overlayTexture = redTexture.clone()
+    overlayTexture.wrapS = THREE.ClampToEdgeWrapping
+    overlayTexture.wrapT = THREE.ClampToEdgeWrapping
+    overlayTexture.repeat.copy(redTextureTransform.repeat)
+    overlayTexture.offset.copy(redTextureTransform.offset)
+    overlayTexture.needsUpdate = true
+    return overlayTexture
+  }, [redTexture, redTextureTransform])
 
   // Animate based on mouse position and update shader uniforms
   useFrame((state) => {
+    const floatPhase = Math.cos(state.clock.elapsedTime * PACKAGE_FLOAT_ANGULAR_SPEED)
+
     if (meshRef.current) {
       meshRef.current.rotation.y = THREE.MathUtils.lerp(
         meshRef.current.rotation.y,
@@ -42,7 +92,17 @@ function ProductPlane({ mousePosition }) {
         -mousePosition.y * 0.15,
         0.08
       )
-      meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.1
+      meshRef.current.position.y = floatPhase * 0.1
+    }
+
+    const redOpacity = 0.5 + 0.5 * floatPhase
+
+    if (goldMaterialRef.current) {
+      goldMaterialRef.current.opacity = 1 - redOpacity
+    }
+
+    if (redMaterialRef.current) {
+      redMaterialRef.current.opacity = redOpacity
     }
 
     // Update shader uniforms directly
@@ -52,7 +112,6 @@ function ProductPlane({ mousePosition }) {
     }
   })
 
-  const aspectRatio = texture ? texture.image.width / texture.image.height : 1
   const planeHeight = 3.2
   const planeWidth = planeHeight * aspectRatio
 
@@ -61,17 +120,40 @@ function ProductPlane({ mousePosition }) {
     uMouse: { value: new THREE.Vector2(0, 0) },
   }), [])
 
+  useEffect(() => {
+    return () => {
+      redOverlayTexture.dispose()
+    }
+  }, [redOverlayTexture])
+
   return (
     <Float
       speed={1.5}
       rotationIntensity={0.1}
-      floatIntensity={0.15}
+      floatIntensity={0}
     >
       <group ref={meshRef}>
-        {/* Main product plane */}
+        {/* Base gold package */}
         <mesh>
           <planeGeometry args={[planeWidth, planeHeight]} />
-          <meshBasicMaterial map={texture} transparent />
+          <meshBasicMaterial
+            ref={goldMaterialRef}
+            map={goldTexture}
+            transparent
+            opacity={1}
+          />
+        </mesh>
+
+        {/* Red package overlay crossfades over the gold base without changing hero sizing */}
+        <mesh position={[0, 0, 0.001]}>
+          <planeGeometry args={[planeWidth, planeHeight]} />
+          <meshBasicMaterial
+            ref={redMaterialRef}
+            map={redOverlayTexture}
+            transparent
+            opacity={0}
+            depthWrite={false}
+          />
         </mesh>
 
         {/* Foil reflections */}
@@ -322,7 +404,8 @@ export default function HeroProduct3D({ mousePosition = { x: 0, y: 0 } }) {
 
 // Mobile fallback - clean display with interactive reflections
 function MobileProductFallback({ mousePosition }) {
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [loadedImages, setLoadedImages] = useState(0)
+  const isLoaded = loadedImages >= 2
 
   const transformStyle = useMemo(() => ({
     transform: `
@@ -331,7 +414,12 @@ function MobileProductFallback({ mousePosition }) {
       rotateX(${-mousePosition.y * 5}deg)
     `,
     transition: 'transform 0.2s ease-out',
+    filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))',
   }), [mousePosition])
+
+  const handleImageLoad = () => {
+    setLoadedImages((currentCount) => Math.min(currentCount + 1, 2))
+  }
 
   // Multiple highlights that move with mouse to simulate foil reflections
   const reflectionStyle = useMemo(() => {
@@ -377,8 +465,8 @@ function MobileProductFallback({ mousePosition }) {
     >
       {/* Main product container */}
       <div
-        className="relative"
-        style={transformStyle}
+        className="relative hero-package-float"
+        style={{ animationDuration: `${PACKAGE_FLOAT_CYCLE_SECONDS}s` }}
       >
         {/* Subtle glow behind */}
         <div
@@ -389,15 +477,24 @@ function MobileProductFallback({ mousePosition }) {
         />
 
         {/* Product image - full brightness */}
-        <div className="relative">
+        <div
+          className="relative w-64 md:w-80 lg:w-96"
+          style={{ ...transformStyle, aspectRatio: GOLD_PACKAGE_ASPECT_RATIO }}
+        >
           <img
-            src={productImage}
+            src={goldProductImage}
             alt="Phyto Gold Premium Supplement"
-            className={`w-64 md:w-80 lg:w-96 h-auto object-contain transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-            onLoad={() => setIsLoaded(true)}
-            style={{
-              filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))',
-            }}
+            className={`hero-package-crossfade-out absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={handleImageLoad}
+            style={{ animationDuration: `${PACKAGE_FLOAT_CYCLE_SECONDS}s` }}
+          />
+
+          <img
+            src={redProductImage}
+            alt="Phyto Max Red Supplement"
+            className={`hero-package-crossfade-in absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={handleImageLoad}
+            style={{ animationDuration: `${PACKAGE_FLOAT_CYCLE_SECONDS}s` }}
           />
 
           {/* Multi-layer moving reflections */}
