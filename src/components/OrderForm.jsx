@@ -49,7 +49,7 @@ const paymentOptions = [
 const orderSteps = [
   {
     title: 'Choose your product',
-    description: 'Pick from the live product list powered by your Google Sheets inventory.',
+    description: 'Pick from the products that are currently available to order.',
   },
   {
     title: 'Choose your payment',
@@ -241,7 +241,7 @@ export default function OrderForm() {
           </h2>
 
           <p className="mt-5 max-w-xl text-base leading-relaxed text-white/72 md:text-lg">
-            Products and inventory are loaded from Google Sheets, so the form always reflects what is actually available before you choose a payment method and submit your order.
+            Available products and stock update in real time, so the form reflects what you can actually order before you choose a payment method and submit your request.
           </p>
 
           <div className="mt-8 space-y-4">
@@ -343,8 +343,8 @@ export default function OrderForm() {
                   disabled={isLoadingProducts || !products.length}
                   className="w-full rounded-2xl border border-white/10 bg-black/35 px-4 py-3 text-white outline-none transition focus:border-[#c39f2f] focus:ring-2 focus:ring-[#c39f2f]/30 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isLoadingProducts && <option value="">Loading products...</option>}
-                  {!isLoadingProducts && !products.length && <option value="">No products configured</option>}
+                  {isLoadingProducts && <option value="">Loading available products...</option>}
+                  {!isLoadingProducts && !products.length && <option value="">No products currently in stock</option>}
                   {!isLoadingProducts && products.map((product) => (
                     <option key={product.sku} value={product.sku} disabled={!product.available}>
                       {product.name}{!product.available ? ' (Out of stock)' : ''}
@@ -376,7 +376,9 @@ export default function OrderForm() {
                     {selectedProduct?.name || 'Choose a product'}
                   </h4>
                   <p className="mt-2 max-w-lg text-sm leading-relaxed text-white/65">
-                    {selectedProduct?.description || 'Product notes from inventory will appear here.'}
+                    {selectedProduct?.description || (products.length
+                      ? 'Select a product to view details.'
+                      : 'Please check back later for the next restock.')}
                   </p>
                 </div>
 
@@ -460,7 +462,7 @@ export default function OrderForm() {
             {formData.paymentMethod !== 'cash_on_delivery' && (
               <div className="rounded-2xl border border-[#c39f2f]/20 bg-[#c39f2f]/10 p-5">
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#f1d883]">
                       {selectedPaymentOption.title} payment details
                     </p>
@@ -470,14 +472,24 @@ export default function OrderForm() {
                     </p>
                   </div>
 
-                  <div className="grid min-w-[240px] gap-2 rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm text-white/75">
-                    <div className="flex items-center justify-between gap-4">
-                      <span>Company name</span>
-                      <strong className="text-white">{paymentCompanyName}</strong>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <span>MCB account number</span>
-                      <strong className="text-white">{mcbAccountNumber || 'Set VITE_MCB_ACCOUNT_NUMBER'}</strong>
+                  <div className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm text-white/75 md:max-w-[420px]">
+                    <div className="grid gap-3">
+                      <div className="rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3">
+                        <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/50">
+                          Company name
+                        </p>
+                        <p className="mt-2 break-words text-base font-semibold text-white">
+                          {paymentCompanyName}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3">
+                        <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/50">
+                          MCB account number
+                        </p>
+                        <p className="mt-2 break-all text-base font-semibold text-white">
+                          {mcbAccountNumber || 'Account number available on request'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -522,7 +534,7 @@ export default function OrderForm() {
 
             {!hasAvailableProducts && !isLoadingProducts && !catalogError && (
               <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm leading-relaxed text-amber-100">
-                No active products with stock are currently available in Google Sheets.
+                There are currently no products in stock.
               </div>
             )}
 

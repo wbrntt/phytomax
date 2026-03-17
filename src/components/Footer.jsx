@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
+import { ORDER_FORM_LINK, handleOrderFormLinkClick } from "../lib/orderFormLink";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -35,6 +36,13 @@ export default function Footer() {
         </svg>
       ),
     },
+  ];
+
+  const quickLinks = [
+    { label: "Benefits", href: "#benefits" },
+    { label: "Products", href: "#products" },
+    { label: "Ingredients", href: "#ingredients" },
+    { label: "Order", href: ORDER_FORM_LINK, onClick: handleOrderFormLinkClick },
   ];
 
   return (
@@ -151,17 +159,18 @@ export default function Footer() {
               Quick Links
             </h3>
             <div className="space-y-3">
-              {["Benefits", "Ingredients", "Contact"].map((link, index) => (
+              {quickLinks.map((link, index) => (
                 <motion.a
-                  key={link}
-                  href={`#${link.toLowerCase()}`}
+                  key={link.label}
+                  href={link.href}
+                  onClick={link.onClick}
                   className="block text-gray-400 hover:text-gold transition-colors text-sm"
                   whileHover={{ x: 5 }}
                   initial={{ opacity: 0, x: -10 }}
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.4, delay: 0.3 + index * 0.05 }}
                 >
-                  {link}
+                  {link.label}
                 </motion.a>
               ))}
               <motion.div

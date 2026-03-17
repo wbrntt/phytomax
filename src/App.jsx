@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import Hero from './components/Hero'
+import Products from './components/Products'
 import Benefits from './components/Benefits'
 import Ingredients from './components/Ingredients'
 import TrustSection from './components/TrustSection'
@@ -36,10 +37,13 @@ function HomePage() {
       <Header />
       <main>
         <Hero />
+        <Products />
         <section id="benefits">
           <Benefits />
         </section>
-        <Ingredients />
+        <section id="ingredients">
+          <Ingredients />
+        </section>
         <TrustSection />
         <CTABanner />
         <OrderForm />
