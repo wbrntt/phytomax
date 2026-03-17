@@ -143,7 +143,7 @@ export default function CTABanner() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          Fill in the order form, choose Juice, bank transfer, or cash on delivery, and add a confirmation code for prepaid orders.
+          Choose your formula, place your order in minutes, and enjoy fast delivery across Mauritius.
         </motion.p>
         
         {/* Buttons */}
@@ -175,7 +175,7 @@ export default function CTABanner() {
             <svg className="relative w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14l-1 11H6L5 8zm4-3a3 3 0 016 0v3H9V5z" />
             </svg>
-            <span className="relative text-lg">Open Order Form</span>
+            <span className="relative text-lg">Start Your Order</span>
             <motion.div
               className="absolute inset-0 border-2 border-black/10 rounded-xl"
               animate={{

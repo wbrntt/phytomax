@@ -23,23 +23,23 @@ const paymentOptions = [
   {
     value: 'juice',
     title: 'Juice',
-    description: 'Pay now with Juice and paste the confirmation code before submitting.',
-    confirmationLabel: 'Juice Confirmation Code',
-    confirmationPlaceholder: 'Paste the Juice confirmation text or reference',
+    description: 'Pay instantly with Juice and enter your payment reference at checkout.',
+    confirmationLabel: 'Juice Payment Reference',
+    confirmationPlaceholder: 'Paste your Juice payment reference',
     requiresConfirmation: true,
   },
   {
     value: 'bank_transfer',
     title: 'Local Bank Transfer',
-    description: 'Transfer to our MCB account, then paste the transfer confirmation code.',
-    confirmationLabel: 'Bank Transfer Confirmation Code',
-    confirmationPlaceholder: 'Paste the bank transfer reference or confirmation code',
+    description: 'Transfer to our MCB account and enter your payment reference at checkout.',
+    confirmationLabel: 'Bank Transfer Reference',
+    confirmationPlaceholder: 'Paste your bank transfer reference',
     requiresConfirmation: true,
   },
   {
     value: 'cash_on_delivery',
     title: 'Cash on Delivery',
-    description: 'Pay the courier on delivery. No confirmation code is required.',
+    description: 'Keep it simple and pay when your order arrives.',
     confirmationLabel: '',
     confirmationPlaceholder: '',
     requiresConfirmation: false,
@@ -49,15 +49,15 @@ const paymentOptions = [
 const orderSteps = [
   {
     title: 'Choose your product',
-    description: 'Pick from the products that are currently available to order.',
+    description: 'Choose the formula that fits you best and select your quantity.',
   },
   {
     title: 'Choose your payment',
-    description: 'Select Juice, local bank transfer, or cash on delivery before submitting your request.',
+    description: 'Choose the payment option that suits you best.',
   },
   {
-    title: 'Submit your order',
-    description: 'Prepaid orders need a confirmation code so we can verify payment and arrange delivery quickly.',
+    title: 'Complete your order',
+    description: 'Prepaid orders only need a payment reference so we can confirm everything quickly.',
   },
 ]
 
@@ -67,6 +67,20 @@ function formatCurrency(amount) {
     currency: 'MUR',
     maximumFractionDigits: 0,
   }).format(amount || 0)
+}
+
+function toCustomerFacingMessage(message, fallbackMessage) {
+  const normalizedMessage = String(message || '').trim()
+
+  if (!normalizedMessage) {
+    return fallbackMessage
+  }
+
+  if (/google apps script|catalog|configured|deployment|publicly accessible|non-json|request failed|request timed out/i.test(normalizedMessage)) {
+    return fallbackMessage
+  }
+
+  return normalizedMessage
 }
 
 export default function OrderForm() {
@@ -93,13 +107,23 @@ export default function OrderForm() {
       const result = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        throw new Error(result.error || 'We could not load the product catalog right now.')
+        throw new Error(
+          toCustomerFacingMessage(
+            result.error,
+            'Products are temporarily unavailable. Please try again in a moment.',
+          ),
+        )
       }
 
       setProducts(Array.isArray(result.products) ? result.products : [])
     } catch (error) {
       setProducts([])
-      setCatalogError(error.message || 'We could not load the product catalog right now.')
+      setCatalogError(
+        toCustomerFacingMessage(
+          error.message,
+          'Products are temporarily unavailable. Please try again in a moment.',
+        ),
+      )
     } finally {
       setIsLoadingProducts(false)
     }
@@ -193,19 +217,27 @@ export default function OrderForm() {
       const result = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        throw new Error(result.error || 'We could not submit your order right now.')
+        throw new Error(
+          toCustomerFacingMessage(
+            result.error,
+            'We could not place your order right now. Please try again in a moment.',
+          ),
+        )
       }
 
       setStatus({
         type: 'success',
-        message: result.message || 'Order received. We will contact you shortly to confirm delivery.',
+        message: result.message || 'Your order is in. We will contact you shortly to confirm delivery.',
       })
       setFormData(initialFormData)
       await loadProducts()
     } catch (error) {
       setStatus({
         type: 'error',
-        message: error.message || 'We could not submit your order right now.',
+        message: toCustomerFacingMessage(
+          error.message,
+          'We could not place your order right now. Please try again in a moment.',
+        ),
       })
       await loadProducts()
     } finally {
@@ -233,15 +265,15 @@ export default function OrderForm() {
           className="lg:sticky lg:top-28"
         >
           <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#c39f2f]/30 bg-[#c39f2f]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[#f1d883]">
-            Inventory-Backed Ordering
+            Simple Ordering
           </span>
 
           <h2 className="font-heading text-4xl font-bold leading-tight text-white md:text-5xl">
-            Order Phytomax straight from live stock.
+            Order Phytomax in just a few steps.
           </h2>
 
           <p className="mt-5 max-w-xl text-base leading-relaxed text-white/72 md:text-lg">
-            Available products and stock update in real time, so the form reflects what you can actually order before you choose a payment method and submit your request.
+            Choose your product, pick your preferred payment method, and complete your order for fast confirmation and delivery.
           </p>
 
           <div className="mt-8 space-y-4">
@@ -276,7 +308,7 @@ export default function OrderForm() {
 
           <div className="mb-8 flex items-start justify-between gap-6">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#f1d883]">Secure checkout request</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#f1d883]">Secure checkout</p>
               <h3 className="mt-3 font-heading text-3xl font-bold text-white">Order Now</h3>
             </div>
             <div className="rounded-2xl border border-[#c39f2f]/20 bg-[#c39f2f]/10 px-4 py-3 text-right text-xs font-medium text-white/70">
@@ -343,7 +375,7 @@ export default function OrderForm() {
                   disabled={isLoadingProducts || !products.length}
                   className="w-full rounded-2xl border border-white/10 bg-black/35 px-4 py-3 text-white outline-none transition focus:border-[#c39f2f] focus:ring-2 focus:ring-[#c39f2f]/30 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isLoadingProducts && <option value="">Loading available products...</option>}
+                  {isLoadingProducts && <option value="">Loading products...</option>}
                   {!isLoadingProducts && !products.length && <option value="">No products currently in stock</option>}
                   {!isLoadingProducts && products.map((product) => (
                     <option key={product.sku} value={product.sku} disabled={!product.available}>
@@ -371,7 +403,7 @@ export default function OrderForm() {
             <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#f1d883]">Selected product</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#f1d883]">Your selection</p>
                   <h4 className="mt-2 font-heading text-2xl font-bold text-white">
                     {selectedProduct?.name || 'Choose a product'}
                   </h4>
@@ -388,9 +420,9 @@ export default function OrderForm() {
                     <strong className="text-white">{selectedProduct ? formatCurrency(selectedProduct.priceMUR) : '-'}</strong>
                   </div>
                   <div className="flex items-center justify-between gap-4">
-                    <span>Availability</span>
+                    <span>Stock status</span>
                     <strong className="text-white">
-                      {selectedProduct ? (selectedProduct.available ? 'Available' : 'Out of stock') : '-'}
+                      {selectedProduct ? (selectedProduct.available ? 'In stock' : 'Out of stock') : '-'}
                     </strong>
                   </div>
                   <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-2">
@@ -468,7 +500,7 @@ export default function OrderForm() {
                     </p>
                     <h4 className="mt-2 font-heading text-2xl font-bold text-white">Pay to this MCB account</h4>
                     <p className="mt-2 max-w-lg text-sm leading-relaxed text-white/70">
-                      Use the exact company name and account number below, then paste the confirmation code before you submit the order.
+                      Use the company name and account number below, then enter your payment reference to complete your order.
                     </p>
                   </div>
 
@@ -510,12 +542,12 @@ export default function OrderForm() {
                   placeholder={selectedPaymentOption.confirmationPlaceholder}
                 />
                 <p className="text-sm leading-relaxed text-white/55">
-                  Use the confirmation exactly as shown by your payment method so we can match the payment quickly.
+                  Enter your payment reference exactly as shown so we can confirm your order quickly.
                 </p>
               </label>
             ) : (
               <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 text-sm leading-relaxed text-white/60">
-                Cash on delivery orders do not require a confirmation code. We will confirm the order and payment on delivery.
+                No payment reference is needed for cash on delivery. You can pay when your order arrives.
               </div>
             )}
 
@@ -563,7 +595,7 @@ export default function OrderForm() {
               </button>
 
               <p className="max-w-sm text-sm leading-relaxed text-white/55">
-                By submitting, you confirm the selected payment method, payment details if applicable, and quantity are accurate for this order.
+                By placing your order, you confirm that your product, quantity, and payment details are correct.
               </p>
             </div>
           </form>
